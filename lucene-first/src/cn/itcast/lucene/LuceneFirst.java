@@ -23,6 +23,10 @@ import java.io.File;
  * @create: 2019-07-17 12:52
  **/
 public class LuceneFirst {
+    /**
+     *
+     * @throws Exception
+     */
     @Test
     public void test() throws Exception {
         //指定索引库存放的路径
@@ -30,7 +34,7 @@ public class LuceneFirst {
         // 第二步：创建一个indexwriter对象。
         // 2）指定一个IndexWriterConfig对象。
         IndexWriter iw = new IndexWriter(directory, new IndexWriterConfig());
-        //
+        //读取磁盘上的文件 对应的每个文件拆创建一个文档对象
         File file = new File("F:\\javaSE黑马48期就业班资料\\javaEE就业班预习资料\\46加密项目阶段\\008 A0.lucene2018\\02.参考资料\\searchsource");
         File[] files = file.listFiles();
         for (File f : files) {
@@ -43,9 +47,9 @@ public class LuceneFirst {
             //文件的大小
             long filesize = FileUtils.sizeOf(f);
             //创建filed
-            /*  参数一.
-                参数二.
-                参数三.
+            /*  参数一:域的名称
+                参数二:域的内容
+                参数三:是否存储
 
              */
             Field fieldName = new TextField("name", filename, Field.Store.YES);
@@ -54,6 +58,7 @@ public class LuceneFirst {
             Field fieldSize = new TextField("size", filesize + "", Field.Store.YES);
             //创建文档对象
             Document document = new Document();
+            //向文档对象中添加域
             document.add(fieldName);
             document.add(fieldPath);
             document.add(fieldContent);
@@ -61,7 +66,7 @@ public class LuceneFirst {
             //把文档对象写入索引库
             iw.addDocument(document);
             //关闭索引库
-            iw.close();
+           // iw.close();
         }
 
     }
