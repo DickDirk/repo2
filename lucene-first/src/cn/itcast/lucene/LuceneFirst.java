@@ -8,8 +8,8 @@ import org.apache.lucene.analysis.tokenattributes.CharTermAttribute;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.TextField;
-import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.*;
+import org.apache.lucene.search.*;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.junit.Test;
@@ -24,7 +24,6 @@ import java.io.File;
  **/
 public class LuceneFirst {
     /**
-     *
      * @throws Exception
      */
     @Test
@@ -66,25 +65,53 @@ public class LuceneFirst {
             //把文档对象写入索引库
             iw.addDocument(document);
             //关闭索引库
-           // iw.close();
+            // iw.close();
         }
 
     }
+
     @Test
     public void test1() throws Exception {
         //指定索引库存放的路径
         Directory directory = FSDirectory.open(new File("F:\\Develop\\JAVA\\Lucene\\index").toPath());
-
+        //2.创建一个indexreader对象,指定索引 位置
+        IndexReader indexReader = DirectoryReader.open(directory);
+        //3.创建一个indexsearcher 对象
+        IndexSearcher indexSearcher = new IndexSearcher(indexReader);
+        //4.创建一个query对象,termquery
+        Query query = new TermQuery(new Term("content", "spring"));
+        //5.执行查询,得到一个topdocs对象
+        //参数一:查询的对象 参数二:查询返回的最大记录数
+        TopDocs topDocs = indexSearcher.search(query, 10);
+        //6.去查询结果的总记录数
+        System.out.println("查询的总记录数: " + topDocs.totalHits);
+        //7.去文档列表
+        ScoreDoc[] scoreDocs = topDocs.scoreDocs;
+        //8.打印文档中的内容
+        for (ScoreDoc scoreDoc : scoreDocs) {
+            //取文档id
+            int docid = scoreDoc.doc;
+            //根据id取文档对象
+            Document document = indexSearcher.doc(docid);
+            System.out.println(document.get("name"));
+            System.out.println(document.get("path"));
+            System.out.println(document.get("content"));
+            System.out.println(document.get("size"));
+            System.out.println("==========================");
+        }
+        //9.关闭indexreader对象
+        indexReader.close();
 
     }
+
     @Test
     public void test2() throws Exception {
-            //
+        //
         Analyzer analyzer = new StandardAnalyzer();
-        TokenStream tokenStream = analyzer.tokenStream("","");
+        TokenStream tokenStream = analyzer.tokenStream("", "");
         CharTermAttribute charTermAttribute = tokenStream.addAttribute(CharTermAttribute.class);
         tokenStream.reset();
-        while (tokenStream.incrementToken()){
+        while (tokenStream.incrementToken()) {
             System.out.println(charTermAttribute.toString());
         }
         tokenStream.close();
