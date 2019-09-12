@@ -1,1 +1,12 @@
-/xpay/.idea
+.DS_Store
+.setttings
+.project
+*.prefs
+# build artifacts
+/target/
+/log/
+/logs/
+*.iml
+.idea
+*.log
+IBS-web/node_modules/
